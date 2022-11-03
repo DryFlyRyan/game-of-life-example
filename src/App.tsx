@@ -1,33 +1,29 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useEffect, useReducer } from 'react';
+import { dispatchEvolveBoard } from './actions/creators';
+import { StyledApp } from './app.styles';
+import Board from './components/Board/Board';
+import { initialState, reducer } from './reducer';
+
+let hadInitialRender = false;
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [state, dispatch] = useReducer(reducer, initialState);
+  useEffect(() => {
+    if (hadInitialRender) {
+      setTimeout(() => {
+        console.log('update state');
+        dispatchEvolveBoard(dispatch)
+      }, 400)
+    } else {
+      hadInitialRender = true;
+    }
+  }, [state.generation])
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <StyledApp className="App">
+      <h1>Game 'o Life</h1>
+      <Board reducerState={state} />
+    </StyledApp>
   )
 }
 
